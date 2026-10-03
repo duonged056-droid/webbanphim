@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class SanPham extends Model
+{
+    use HasFactory;
+
+    protected $table = 'san_phams';
+    protected $primaryKey = 'MaSP';
+
+    protected $fillable = [
+        'TenSP',
+        'LoaiSP',
+        'GiaBan',
+        'SoLuongTon',
+        'MoTa',
+        'HinhAnh'
+    ];
+}
