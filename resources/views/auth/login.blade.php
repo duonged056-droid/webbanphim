@@ -1,64 +1,65 @@
 @extends('layouts.app')
 
-@section('styles')
-<style>
-    .auth-container {
-        max-width: 450px;
-        margin: 5rem auto;
-        padding: 3rem 2.5rem;
-        background: var(--dark-elevated);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        box-shadow: var(--shadow-lg);
-    }
-    .auth-title {
-        text-align: center;
-        margin-bottom: 2rem;
-        font-size: 2rem;
-        color: var(--primary);
-    }
-    .form-group { margin-bottom: 1.5rem; }
-    .form-group label { display: block; margin-bottom: 0.5rem; color: var(--gray); font-size: 0.9rem;}
-    .form-control { width: 100%; padding: 0.8rem 1rem; border-radius: 8px; border: 1px solid var(--border); background: var(--darker); color: var(--light); transition: border-color 0.2s; font-family: inherit;}
-    .form-control:focus { outline: none; border-color: var(--primary); }
-    
-    .alert-error { padding: 1rem; background: rgba(239, 68, 68, 0.1); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.9rem;}
-</style>
-@endsection
+@section('title', 'Đăng Nhập - KEYLABS')
 
 @section('content')
-<div class="auth-container">
-    <h1 class="auth-title">Đăng Nhập</h1>
-    
-    @if($errors->any())
-        <div class="alert-error">
-            @foreach($errors->all() as $error)
-                <div>❌ {{ $error }}</div>
-            @endforeach
-        </div>
-    @endif
+<div class="max-w-md mx-auto px-4 py-16">
+    <div class="rounded-3xl bg-dark-800/90 border border-white/10 p-8 shadow-2xl relative overflow-hidden">
+        <!-- Ánh sáng nền -->
+        <div class="absolute -top-12 -right-12 w-48 h-48 bg-brand-500/20 rounded-full blur-2xl pointer-events-none"></div>
 
-    <form action="{{ route('login.post') }}" method="POST">
-        @csrf
-        <div class="form-group">
-            <label>Email đăng nhập</label>
-            <input type="email" name="email" class="form-control" value="{{ old('email') }}" required autofocus>
+        <div class="text-center mb-8 relative z-10">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-cyan-500 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-brand-500/30">
+                <i class="fa-solid fa-lock text-white text-lg"></i>
+            </div>
+            <h1 class="text-2xl font-extrabold text-white">Đăng Nhập</h1>
+            <p class="text-xs text-gray-400 mt-1">Chào mừng bạn quay trở lại với KEYLABS</p>
         </div>
         
-        <div class="form-group">
-            <label>Mật khẩu</label>
-            <input type="password" name="password" class="form-control" required>
-        </div>
+        @if($errors->any())
+            <div class="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs mb-6 space-y-1">
+                @foreach($errors->all() as $error)
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-circle-exclamation"></i>
+                        <span>{{ $error }}</span>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
+        <form action="{{ route('login.post') }}" method="POST" class="space-y-4 relative z-10">
+            @csrf
+            <div>
+                <label class="block text-xs font-semibold text-gray-300 mb-1.5">Email tài khoản</label>
+                <div class="relative">
+                    <input type="email" name="email" class="form-control pl-10" value="{{ old('email') }}" placeholder="duong@gmail.com" required autofocus>
+                    <i class="fa-regular fa-envelope absolute left-3.5 top-3.5 text-gray-400 text-sm pointer-events-none"></i>
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-xs font-semibold text-gray-300 mb-1.5">Mật khẩu</label>
+                <div class="relative">
+                    <input type="password" name="password" class="form-control pl-10" placeholder="••••••" required>
+                    <i class="fa-solid fa-key absolute left-3.5 top-3.5 text-gray-400 text-sm pointer-events-none"></i>
+                </div>
+            </div>
+            
+            <button type="submit" class="w-full py-3.5 rounded-2xl bg-brand-500 hover:bg-brand-400 text-white font-bold text-sm shadow-lg shadow-brand-500/30 transition-all flex items-center justify-center gap-2 mt-2">
+                <span>Đăng Nhập</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+            </button>
+        </form>
         
-        <button type="submit" class="btn" style="width: 100%; margin-top: 1rem; padding: 0.8rem; font-size: 1.1rem;">Đăng Nhập</button>
-    </form>
-    
-    <div style="text-align: center; margin-top: 2rem; color: var(--gray); font-size: 0.9rem;">
-        Chưa có tài khoản? <a href="{{ route('register') }}" style="color: var(--primary);">Đăng ký ngay</a>
-        <br><br>
-        <p>Tài khoản dùng thử:</p>
-        <p>Admin: <strong>duong@gmail.com / 1</strong></p>
-        <p>Khách: <strong>khach@gmail.com / 123456</strong></p>
+        <div class="text-center mt-6 pt-6 border-t border-white/10 text-xs text-gray-400">
+            Chưa có tài khoản? <a href="{{ route('register') }}" class="text-brand-400 hover:underline font-semibold">Đăng ký ngay</a>
+            
+            <div class="mt-4 p-3 rounded-xl bg-dark-900/80 border border-white/5 text-left text-[11px] font-mono space-y-1 text-gray-400">
+                <div class="text-gray-300 font-bold mb-1">🔑 Tài khoản dùng thử có sẵn:</div>
+                <div>• Admin: <span class="text-amber-400">duong@gmail.com</span> / pass: <span class="text-amber-400">1</span></div>
+                <div>• Khách: <span class="text-cyan-400">khach@gmail.com</span> / pass: <span class="text-cyan-400">123456</span></div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection

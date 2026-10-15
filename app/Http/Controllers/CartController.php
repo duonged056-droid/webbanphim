@@ -75,9 +75,13 @@ class CartController extends Controller
     public function processCheckout(Request $request)
     {
         $request->validate([
-            'DienThoai' => 'required|string|max:20',
-            'DiaChiGiaoHang' => 'required|string|max:255',
+            'DienThoai' => ['required', 'string', 'regex:/^[0-9]{9,11}$/'],
+            'DiaChiGiaoHang' => 'required|string|max:500',
             'PhuongThucThanhToan' => 'required|string',
+        ], [
+            'DienThoai.required' => 'Vui lòng nhập số điện thoại.',
+            'DienThoai.regex' => 'Số điện thoại chỉ gồm 9-11 chữ số.',
+            'DiaChiGiaoHang.required' => 'Vui lòng nhập địa chỉ giao hàng.',
         ]);
 
         $cart = session()->get('cart', []);
