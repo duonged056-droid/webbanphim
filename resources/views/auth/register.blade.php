@@ -46,6 +46,22 @@
             </div>
             
             <div>
+                <label class="block text-xs font-semibold text-gray-300 mb-1.5">Số điện thoại <span class="text-gray-500 font-normal">(không bắt buộc)</span></label>
+                <div class="relative">
+                    <input type="tel" name="so_dien_thoai" class="form-control pl-10" value="{{ old('so_dien_thoai') }}" placeholder="0901234567">
+                    <i class="fa-solid fa-phone absolute left-3.5 top-3.5 text-gray-400 text-sm pointer-events-none"></i>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-gray-300 mb-1.5">Địa chỉ giao hàng <span class="text-gray-500 font-normal">(không bắt buộc)</span></label>
+                <div class="relative">
+                    <input type="text" name="dia_chi" class="form-control pl-10" value="{{ old('dia_chi') }}" placeholder="Số nhà, tên đường, Quận/Huyện, Tỉnh/TP">
+                    <i class="fa-solid fa-location-dot absolute left-3.5 top-3.5 text-gray-400 text-sm pointer-events-none"></i>
+                </div>
+            </div>
+
+            <div>
                 <label class="block text-xs font-semibold text-gray-300 mb-1.5">Mật khẩu</label>
                 <div class="relative">
                     <input type="password" name="password" class="form-control pl-10" placeholder="Tối thiểu 6 ký tự" required>

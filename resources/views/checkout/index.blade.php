@@ -34,6 +34,7 @@
                     type="tel"
                     name="DienThoai"
                     id="DienThoai"
+                    value="{{ old('DienThoai', Auth::user()->so_dien_thoai ?? '') }}"
                     required
                     maxlength="11"
                     placeholder="Vd: 0901234567"
@@ -48,6 +49,26 @@
                 <div id="phoneError" style="color: #ef4444; font-size: 0.8rem; margin-top: 0.3rem; display: none;">Số điện thoại chỉ gồm 9-11 chữ số.</div>
             </div>
 
+            <!-- Sổ địa chỉ đã lưu trong tài khoản -->
+            @if(isset($danhSachDiaChi) && $danhSachDiaChi->count() > 0)
+            <div style="margin-bottom: 1.2rem; background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.3); border-radius: 8px; padding: 0.9rem 1rem;">
+                <label style="display: block; color: #a5b4fc; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">
+                    🏠 Chọn nhanh từ sổ địa chỉ đã lưu:
+                </label>
+                <select id="selectSavedAddress" onchange="applySavedAddress(this)" style="width: 100%; padding: 0.7rem 0.9rem; border-radius: 6px; border: 1px solid var(--border); background: var(--darker); color: var(--light); font-size: 0.85rem; outline: none;">
+                    <option value="">-- Chọn địa chỉ đã lưu --</option>
+                    @foreach($danhSachDiaChi as $dc)
+                        @php
+                            $fullDc = trim(($dc->dia_chi ?? '') . ($dc->phuong_xa ? ', ' . $dc->phuong_xa : '') . ($dc->quan_huyen ? ', ' . $dc->quan_huyen : '') . ($dc->tinh_thanh ? ', ' . $dc->tinh_thanh : ''), ', ');
+                        @endphp
+                        <option value="{{ $fullDc }}" data-phone="{{ $dc->so_dien_thoai }}" {{ $dc->la_mac_dinh ? 'selected' : '' }}>
+                            {{ $dc->ho_ten }} - {{ $fullDc }} {{ $dc->la_mac_dinh ? '(★ Mặc định)' : '' }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            @endif
+
             <!-- Địa chỉ giao hàng -->
             <div style="margin-bottom: 1rem;">
                 <label style="display: block; color: var(--gray); margin-bottom: 0.5rem; font-size: 0.9rem;">Địa chỉ giao hàng *</label>
@@ -57,7 +78,7 @@
                     <span>📍</span> Sử dụng vị trí hiện tại của tôi
                 </button>
                 <div style="text-align: center; color: var(--gray); font-size: 0.8rem; margin-bottom: 1rem; position: relative;">
-                    <span style="background: var(--dark-elevated); padding: 0 0.5rem; position: relative; z-index: 1;">hoặc nhập địa chỉ thủ công</span>
+                    <span style="background: var(--dark-elevated); padding: 0 0.5rem; position: relative; z-index: 1;">hoặc nhập địa chỉ mới thủ công</span>
                     <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: var(--border); z-index: 0;"></div>
                 </div>
 
@@ -532,9 +553,31 @@ document.getElementById('checkoutForm').addEventListener('submit', function(e) {
 });
 
 // ==============================
-// 7. KHỞI ĐỘNG
+// 7. KHỞI ĐỘNG & SỔ ĐỊA CHỈ
 // ==============================
+function applySavedAddress(sel) {
+    const val = sel.value;
+    if (!val) return;
+    const opt = sel.options[sel.selectedIndex];
+    const phone = opt.getAttribute('data-phone');
+    if (phone && !document.getElementById('DienThoai').value) {
+        document.getElementById('DienThoai').value = phone;
+    }
+    document.getElementById('DiaChiGiaoHangFull').value = val;
+    document.getElementById('addressPreviewText').textContent = val;
+    document.getElementById('addressPreview').style.display = 'block';
+    showMapForAddress(val);
+}
+
 loadTinh();
+
+// Tự động áp dụng nếu có địa chỉ mặc định được chọn sẵn
+window.addEventListener('DOMContentLoaded', function() {
+    const sel = document.getElementById('selectSavedAddress');
+    if (sel && sel.value) {
+        applySavedAddress(sel);
+    }
+});
 
 // CSS animation
 const style = document.createElement('style');

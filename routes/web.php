@@ -48,15 +48,34 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/don-hang', [App\Http\Controllers\OrderController::class, 'index'])->name('orders.index');
     Route::get('/don-hang/{id}', [App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
     Route::post('/don-hang/{id}/complete', [App\Http\Controllers\OrderController::class, 'markAsCompleted'])->name('orders.complete');
+
+    // Hồ sơ cá nhân
+    Route::get('/ho-so', [App\Http\Controllers\HoSoController::class, 'index'])->name('ho-so.index');
+    Route::post('/ho-so', [App\Http\Controllers\HoSoController::class, 'update'])->name('ho-so.update');
+    Route::post('/ho-so/doi-mat-khau', [App\Http\Controllers\HoSoController::class, 'doiMatKhau'])->name('ho-so.doi-mat-khau');
+
+    // Địa chỉ giao hàng
+    Route::post('/dia-chi', [App\Http\Controllers\HoSoController::class, 'themDiaChi'])->name('dia-chi.them');
+    Route::post('/dia-chi/{id}/mac-dinh', [App\Http\Controllers\HoSoController::class, 'setMacDinh'])->name('dia-chi.mac-dinh');
+    Route::delete('/dia-chi/{id}', [App\Http\Controllers\HoSoController::class, 'xoaDiaChi'])->name('dia-chi.xoa');
+
+    // Đánh giá sản phẩm
+    Route::post('/san-pham/{id}/danh-gia', [HomeController::class, 'themDanhGia'])->name('san-pham.danh-gia');
 });
 
 // Admin Routes (CRUD Sản Phẩm)
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [App\Http\Controllers\AdminController::class, 'dashboard'])->name('dashboard');
     Route::resource('sanpham', SanPhamController::class);
-    
+
     // Quản lý đơn hàng
     Route::get('/don-hang', [App\Http\Controllers\OrderController::class, 'adminIndex'])->name('orders.index');
     Route::get('/don-hang/{id}', [App\Http\Controllers\OrderController::class, 'adminShow'])->name('orders.show');
     Route::post('/don-hang/{id}/complete', [App\Http\Controllers\OrderController::class, 'adminMarkAsCompleted'])->name('orders.complete');
+
+    // Quản lý khách hàng
+    Route::get('/khach-hang', [App\Http\Controllers\KhachHangController::class, 'index'])->name('khach-hang.index');
+    Route::get('/khach-hang/{id}', [App\Http\Controllers\KhachHangController::class, 'show'])->name('khach-hang.show');
+    Route::post('/khach-hang/{id}/toggle', [App\Http\Controllers\KhachHangController::class, 'toggleActive'])->name('khach-hang.toggle');
+    Route::delete('/khach-hang/{id}', [App\Http\Controllers\KhachHangController::class, 'destroy'])->name('khach-hang.destroy');
 });

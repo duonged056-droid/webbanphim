@@ -69,7 +69,11 @@ class CartController extends Controller
             $total += $item['price'] * $item['quantity'];
         }
 
-        return view('checkout.index', compact('cart', 'total'));
+        $user = Auth::user();
+        $diaChiMacDinh = $user ? $user->diaChiMacDinh : null;
+        $danhSachDiaChi = $user ? $user->diaChiGiaoHangs()->get() : collect();
+
+        return view('checkout.index', compact('cart', 'total', 'user', 'diaChiMacDinh', 'danhSachDiaChi'));
     }
 
     public function processCheckout(Request $request)
@@ -91,12 +95,25 @@ class CartController extends Controller
 
         DB::beginTransaction();
         try {
+            $user = Auth::user();
+
+            // Cập nhật SĐT và Địa chỉ vào tài khoản user nếu chưa có
+            if ($user) {
+                if (empty($user->so_dien_thoai)) {
+                    $user->so_dien_thoai = $request->DienThoai;
+                }
+                if (empty($user->dia_chi)) {
+                    $user->dia_chi = $request->DiaChiGiaoHang;
+                }
+                $user->save();
+            }
+
             // Liên kết với bảng khach_hangs
-            $khachHang = DB::table('khach_hangs')->where('Email', Auth::user()->email)->first();
+            $khachHang = DB::table('khach_hangs')->where('Email', $user->email)->first();
             if (!$khachHang) {
                 $khachHangId = DB::table('khach_hangs')->insertGetId([
-                    'TenKH' => Auth::user()->name,
-                    'Email' => Auth::user()->email,
+                    'TenKH' => $user->name,
+                    'Email' => $user->email,
                     'MatKhau' => 'NO_PASSWORD',
                     'SoDienThoai' => $request->DienThoai,
                     'DiaChi' => $request->DiaChiGiaoHang,
@@ -105,6 +122,12 @@ class CartController extends Controller
                 ]);
             } else {
                 $khachHangId = $khachHang->MaKH;
+                // Cập nhật SĐT và địa chỉ mới nhất cho khach_hangs
+                DB::table('khach_hangs')->where('MaKH', $khachHangId)->update([
+                    'SoDienThoai' => $request->DienThoai,
+                    'DiaChi' => $request->DiaChiGiaoHang,
+                    'updated_at' => now(),
+                ]);
             }
 
             $total = 0;

@@ -20,4 +20,28 @@ class SanPham extends Model
         'MoTa',
         'HinhAnh'
     ];
+
+    /** Các đánh giá của sản phẩm */
+    public function danhGias()
+    {
+        return $this->hasMany(DanhGia::class, 'MaSP', 'MaSP');
+    }
+
+    /** Các đánh giá đã được duyệt */
+    public function danhGiaDaDuyet()
+    {
+        return $this->hasMany(DanhGia::class, 'MaSP', 'MaSP')->where('da_duyet', true);
+    }
+
+    /** Điểm đánh giá trung bình */
+    public function getDiemTrungBinhAttribute(): float
+    {
+        return (float) ($this->danhGiaDaDuyet()->avg('so_sao') ?? 5.0);
+    }
+
+    /** Tổng số đánh giá đã duyệt */
+    public function getTongDanhGiaAttribute(): int
+    {
+        return $this->danhGiaDaDuyet()->count();
+    }
 }

@@ -172,11 +172,17 @@
 
                     <!-- Thông tin sản phẩm -->
                     <div class="p-5">
-                        <!-- Tech Specs Pills -->
-                        <div class="flex items-center gap-1.5 mb-2.5">
-                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-gray-400">Hot-swap</span>
-                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-gray-400">RGB</span>
-                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-gray-400">PBT</span>
+                        <!-- Tech Specs Pills & Star rating -->
+                        <div class="flex items-center justify-between mb-2.5">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-gray-400">Hot-swap</span>
+                                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-gray-400">RGB</span>
+                                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white/5 text-gray-400">PBT</span>
+                            </div>
+                            <div class="flex items-center gap-1 text-[11px] text-amber-400 bg-amber-400/10 px-1.5 py-0.5 rounded-md border border-amber-400/20">
+                                <i class="fa-solid fa-star text-[10px]"></i>
+                                <span class="font-bold font-mono">{{ number_format($sp->diem_trung_binh ?? 5.0, 1) }}</span>
+                            </div>
                         </div>
 
                         <a href="{{ route('detail', $id) }}">

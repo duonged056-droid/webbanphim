@@ -20,9 +20,25 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+
+            // Kiểm tra xem tài khoản có bị khoá không
+            if (!$user->is_active) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                return back()->withErrors([
+                    'email' => 'Tài khoản của bạn đã bị khoá. Vui lòng liên hệ quản trị viên.',
+                ])->withInput();
+            }
+
+            // Cập nhật lần đăng nhập gần nhất
+            $user->last_login_at = now();
+            $user->save();
+
             $request->session()->regenerate();
 
-            if (Auth::user()->role === 'admin') {
+            if ($user->role === 'admin') {
                 return redirect()->intended('admin/sanpham')->with('success', 'Đăng nhập thành công với quyền Admin!');
             }
             return redirect()->intended('/')->with('success', 'Đăng nhập thành công!');
@@ -50,16 +66,26 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:1|confirmed',
+            'name'          => 'required|string|max:255',
+            'email'         => 'required|string|email|max:255|unique:users',
+            'password'      => 'required|string|min:6|confirmed',
+            'so_dien_thoai' => 'nullable|string|max:20',
+            'dia_chi'       => 'nullable|string|max:500',
+        ], [
+            'password.min'  => 'Mật khẩu phải có ít nhất 6 ký tự.',
+            'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
+            'email.unique'  => 'Email này đã được sử dụng.',
         ]);
 
         $user = \App\Models\User::create([
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'password' => bcrypt($validatedData['password']),
-            'role' => 'customer',
+            'name'          => $validatedData['name'],
+            'email'         => $validatedData['email'],
+            'password'      => bcrypt($validatedData['password']),
+            'so_dien_thoai' => $request->so_dien_thoai ?? null,
+            'dia_chi'       => $request->dia_chi ?? null,
+            'role'          => 'customer',
+            'is_active'     => true,
+            'last_login_at' => now(),
         ]);
 
         Auth::login($user);

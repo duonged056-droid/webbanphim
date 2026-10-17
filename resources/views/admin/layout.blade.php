@@ -51,6 +51,7 @@
         <a href="{{ route('admin.dashboard') }}">Bảng Điều Khiển</a>
         <a href="{{ route('admin.sanpham.index') }}">Sản Phẩm</a>
         <a href="{{ route('admin.orders.index') }}">Đơn Hàng</a>
+        <a href="{{ route('admin.khach-hang.index') }}">Khách Hàng</a>
         <a href="{{ route('home') }}" style="margin-top: 2rem; color: var(--text-gray);">← Về trang chủ</a>
     </div>
     <div class="content">

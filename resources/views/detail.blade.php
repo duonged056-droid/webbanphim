@@ -59,9 +59,20 @@
                     <span class="text-xs text-gray-400 font-mono">Mã SP: #{{ $sanpham->MaSP }}</span>
                 </div>
 
-                <h1 class="text-2xl sm:text-3xl font-extrabold text-white leading-tight mb-4">
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-white leading-tight mb-2">
                     {{ $sanpham->TenSP }}
                 </h1>
+
+                <!-- Đánh giá sao -->
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="flex items-center text-amber-400 text-sm gap-0.5">
+                        @for($i = 1; $i <= 5; $i++)
+                            <i class="fa-solid fa-star {{ $i <= round($sanpham->diem_trung_binh) ? 'text-amber-400' : 'text-gray-600' }}"></i>
+                        @endfor
+                    </div>
+                    <span class="text-sm font-bold text-white">{{ number_format($sanpham->diem_trung_binh, 1) }} / 5</span>
+                    <span class="text-xs text-gray-400">({{ $sanpham->tong_danh_gia }} đánh giá từ khách mua)</span>
+                </div>
 
                 <!-- Giá -->
                 <div class="p-4 rounded-2xl bg-dark-900/80 border border-white/10 mb-6 flex items-baseline gap-3">
@@ -113,6 +124,115 @@
                 @endif
             </div>
 
+        </div>
+    </div>
+
+    <!-- KHU VỰC ĐÁNH GIÁ CỦA KHÁCH HÀNG -->
+    <div class="mt-12 bg-dark-800/80 rounded-3xl border border-white/10 p-6 sm:p-10">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-white/10">
+            <div>
+                <h2 class="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-comments text-brand-400"></i> Đánh giá từ khách hàng
+                </h2>
+                <p class="text-xs text-gray-400 mt-1">Trải nghiệm thực tế từ những người đã sở hữu sản phẩm</p>
+            </div>
+
+            <!-- Tổng quan điểm số -->
+            <div class="flex items-center gap-4 bg-dark-900/60 border border-white/10 rounded-2xl px-5 py-3.5">
+                <div class="text-center">
+                    <span class="text-3xl font-black text-amber-400 leading-none">{{ number_format($sanpham->diem_trung_binh, 1) }}</span>
+                    <span class="text-xs text-gray-500 block">trên 5.0</span>
+                </div>
+                <div class="h-8 w-px bg-white/10"></div>
+                <div>
+                    <div class="flex text-amber-400 text-xs gap-1">
+                        @for($i = 1; $i <= 5; $i++)
+                            <i class="fa-solid fa-star {{ $i <= round($sanpham->diem_trung_binh) ? 'text-amber-400' : 'text-gray-600' }}"></i>
+                        @endfor
+                    </div>
+                    <span class="text-xs text-gray-400 mt-0.5 block">{{ $danhGias->count() }} lượt nhận xét</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danh sách đánh giá -->
+        <div class="mt-8 space-y-6">
+            @forelse($danhGias as $dg)
+                <div class="p-5 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-all">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-cyan-500 flex items-center justify-center font-bold text-white text-sm">
+                                {{ substr($dg->user->name ?? 'K', 0, 1) }}
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-white">{{ $dg->user->name ?? 'Khách hàng' }}</h4>
+                                <span class="text-[11px] text-gray-500">{{ $dg->created_at->format('d/m/Y H:i') }}</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-1 text-amber-400 text-xs">
+                            @for($s = 1; $s <= 5; $s++)
+                                <i class="fa-solid fa-star {{ $s <= $dg->so_sao ? 'text-amber-400' : 'text-gray-700' }}"></i>
+                            @endfor
+                        </div>
+                    </div>
+
+                    @if($dg->tieu_de)
+                        <h5 class="text-sm font-semibold text-gray-200 mb-1.5">{{ $dg->tieu_de }}</h5>
+                    @endif
+                    <p class="text-xs sm:text-sm text-gray-400 leading-relaxed">{{ $dg->noi_dung }}</p>
+                </div>
+            @empty
+                <div class="text-center py-10 text-gray-500">
+                    <i class="fa-regular fa-comment-dots text-4xl mb-2 block"></i>
+                    <p class="text-sm">Chưa có đánh giá nào cho sản phẩm này. Hãy là người đầu tiên trải nghiệm!</p>
+                </div>
+            @endforelse
+        </div>
+
+        <!-- Biểu mẫu gửi đánh giá mới -->
+        <div class="mt-10 pt-8 border-t border-white/10">
+            @auth
+                <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-pen text-indigo-400 text-sm"></i> Viết đánh giá của bạn
+                </h3>
+                <form action="{{ route('san-pham.danh-gia', $sanpham->MaSP) }}" method="POST" class="space-y-4 max-w-2xl">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Đánh giá số sao *</label>
+                        <div class="flex items-center gap-3">
+                            <select name="so_sao" class="form-control w-44" required>
+                                <option value="5">★★★★★ (5 sao - Tuyệt vời)</option>
+                                <option value="4">★★★★☆ (4 sao - Rất tốt)</option>
+                                <option value="3">★★★☆☆ (3 sao - Bình thường)</option>
+                                <option value="2">★★☆☆☆ (2 sao - Tạm được)</option>
+                                <option value="1">★☆☆☆☆ (1 sao - Không ưng ý)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Tiêu đề nhận xét</label>
+                        <input type="text" name="tieu_de" placeholder="Vd: Cảm giác gõ rất đã, chất lượng tốt" class="form-control">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Nội dung chi tiết *</label>
+                        <textarea name="noi_dung" rows="3" required placeholder="Chia sẻ cảm nhận về switch, keycap, độ hoàn thiện, âm thanh phím..." class="form-control"></textarea>
+                    </div>
+
+                    <button type="submit" class="py-2.5 px-6 rounded-xl bg-brand-500 hover:bg-brand-400 text-white font-bold text-sm shadow-lg shadow-brand-500/25 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-paper-plane text-xs"></i> Gửi Đánh Giá
+                    </button>
+                </form>
+            @else
+                <div class="p-6 rounded-2xl bg-white/[0.02] border border-white/5 text-center">
+                    <p class="text-sm text-gray-400 mb-3">Vui lòng đăng nhập để có thể để lại đánh giá cho sản phẩm này.</p>
+                    <a href="{{ route('login') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-white text-xs font-bold transition-all">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i> Đăng nhập ngay
+                    </a>
+                </div>
+            @endauth
         </div>
     </div>
 </div>

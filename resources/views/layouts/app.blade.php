@@ -214,6 +214,9 @@
                                 <a href="{{ route('orders.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5">
                                     <i class="fa-solid fa-box-open"></i> Đơn hàng của tôi
                                 </a>
+                                <a href="{{ route('ho-so.index') }}" class="flex items-center gap-2.5 px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5">
+                                    <i class="fa-solid fa-user-circle"></i> Hồ sơ cá nhân
+                                </a>
                                 <hr class="border-white/10 my-1">
                                 <form action="{{ route('logout') }}" method="POST">
                                     @csrf
@@ -242,6 +245,21 @@
                 <a href="{{ route('home') }}#products" class="block px-3 py-2 rounded-lg text-sm font-semibold text-gray-300 hover:bg-white/5">Bàn phím cơ</a>
                 <a href="{{ route('build.index') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-brand-400 hover:bg-white/5">Custom Phím</a>
                 <a href="{{ route('contact') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-gray-300 hover:bg-white/5">Liên hệ</a>
+                @auth
+                    <div class="pt-2 border-t border-white/10 space-y-1">
+                        <a href="{{ route('orders.index') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-gray-300 hover:bg-white/5">
+                            <i class="fa-solid fa-box-open mr-2 text-brand-400"></i>Đơn hàng của tôi
+                        </a>
+                        <a href="{{ route('ho-so.index') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-gray-300 hover:bg-white/5">
+                            <i class="fa-solid fa-user-circle mr-2 text-cyan-400"></i>Hồ sơ cá nhân
+                        </a>
+                        @if(Auth::user()->role === 'admin')
+                            <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 rounded-lg text-sm font-semibold text-amber-400 hover:bg-white/5">
+                                <i class="fa-solid fa-gauge-high mr-2"></i>Trang Quản trị
+                            </a>
+                        @endif
+                    </div>
+                @endauth
             </div>
         </div>
     </header>

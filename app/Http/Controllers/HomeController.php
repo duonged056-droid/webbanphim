@@ -48,8 +48,31 @@ class HomeController extends Controller
 
     public function detail($id)
     {
-        $sanpham = SanPham::findOrFail($id);
-        return view('detail', compact('sanpham'));
+        $sanpham = SanPham::with(['danhGiaDaDuyet.user'])->findOrFail($id);
+        $danhGias = $sanpham->danhGiaDaDuyet()->latest()->get();
+        return view('detail', compact('sanpham', 'danhGias'));
+    }
+
+    public function themDanhGia(Request $request, $id)
+    {
+        $request->validate([
+            'so_sao'   => 'required|integer|min:1|max:5',
+            'tieu_de'  => 'nullable|string|max:200',
+            'noi_dung' => 'required|string|max:1000',
+        ], [
+            'noi_dung.required' => 'Vui lòng nhập nội dung đánh giá.',
+        ]);
+
+        \App\Models\DanhGia::create([
+            'user_id'  => auth()->id(),
+            'MaSP'     => $id,
+            'so_sao'   => $request->so_sao,
+            'tieu_de'  => $request->tieu_de,
+            'noi_dung' => $request->noi_dung,
+            'da_duyet' => true,
+        ]);
+
+        return redirect()->back()->with('success', 'Cảm ơn bạn đã gửi đánh giá cho sản phẩm!');
     }
 
     public function contact()
